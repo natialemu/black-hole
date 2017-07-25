@@ -17,6 +17,7 @@ package com.google.engedu.blackhole;
 
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,13 +77,16 @@ public class BlackHoleBoard {
 
     // This is the inverse of the method above.
     protected Coordinates indexToCoords(int i) {
-        Coordinates result = null;
-        // TODO: Compute the column and row number for the ith location in the array.
-        // The row number is the triangular root of i as explained in wikipedia:
-        // https://en.wikipedia.org/wiki/Triangular_number#Triangular_roots_and_tests_for_triangular_numbers
-        // The column number is i - (the number of tiles in all the previous rows).
-        // This is tricky to compute correctly so use the unit test in BlackHoleBoardTest to get it
-        // right.
+
+        int row = (int)((Math.sqrt(8*i + 1) - 1)/2);
+        int col;
+        if(row == 0){
+            col = 0;
+        }else{
+            col = i - ((row)*(row+1)/2);//i& the sum of all the row sizes so far
+        }
+        Coordinates result = new Coordinates(col,row);
+
         return result;
     }
 
@@ -144,10 +148,44 @@ public class BlackHoleBoard {
      */
     public int getScore() {
         int score = 0;
+        int emptyIndex = gameIsOver();
+        if(emptyIndex != -1){
+
+            ArrayList<BlackHoleTile> tiles = getNeighbors(indexToCoords(emptyIndex));
+            for(BlackHoleTile tile: tiles){
+                //if the tile is the computer's, subtract score
+                //if the tile is the player's, add to the score
+                //goal is to optimize for the computer
+                if(tile.player == 1){
+                    score -= tile.value;
+                }
+                else{
+                    score += tile.value;
+                }
+
+            }
+        }
         // TODO: Implement this method to compute the final score for a given board.
         // Find the empty tile left on the board then add/substract the values of all the
         // surrounding tiles depending on who the tile belongs to.
         return score;
+    }
+
+    private int gameIsOver() {
+        boolean isOver = false;
+        int nullIndex = -1;
+
+        for(int i = 0; i < tiles.length; i++){
+            if(!isOver && tiles[i] == null){
+                isOver = true;
+                nullIndex = i;
+            }
+            if(isOver && tiles[i] == null){
+                nullIndex = -1;
+            }
+        }
+        return nullIndex;
+
     }
 
     // Helper for getScore that finds all the tiles around the given coordinates.
