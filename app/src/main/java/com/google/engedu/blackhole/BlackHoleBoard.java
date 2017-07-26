@@ -15,10 +15,12 @@
 
 package com.google.engedu.blackhole;
 
+import android.content.Intent;
 import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -27,6 +29,22 @@ import java.util.Random;
  * Note that the buttons on screen are not updated by this class.
  */
 public class BlackHoleBoard {
+
+    private final int gameDepth = BOARD_SIZE -1;
+
+    public int getBoardDepth() {
+        return boardDepth;
+    }
+
+    private int boardDepth;
+
+    public static int THRESHOLD = 4;
+
+    public int getBoardScore() {
+        return boardScore;
+    }
+
+    private int boardScore;
     // The number of turns each player will take.
     public final static int NUM_TURNS = 10;
     // Size of the game board. Each player needs to take 10 turns and leave one empty tile.
@@ -45,9 +63,14 @@ public class BlackHoleBoard {
     // A single random object that we'll reuse for all our random number needs.
     private static final Random random = new Random();
 
+    //indices of moves that the computer should make
+    private ArrayList<Integer> movesToMake = new ArrayList<>();
+
     // Constructor. Nothing to see here.
-    BlackHoleBoard() {
+    public BlackHoleBoard() {
         tiles = new BlackHoleTile[BOARD_SIZE];
+        boardScore = 0;
+        boardDepth = 0;
         reset();
     }
 
@@ -57,6 +80,8 @@ public class BlackHoleBoard {
         this.tiles = other.tiles.clone();
         this.currentPlayer = other.currentPlayer;
         this.nextMove = other.nextMove.clone();
+        boardScore = other.getBoardScore();
+        boardDepth = other.getBoardDepth();
     }
 
     // Reset this board to its default state.
@@ -128,6 +153,12 @@ public class BlackHoleBoard {
 
     // Pick a good move for the computer to make. Returns the array index of the position to play.
     public int pickMove() {
+
+
+        //based on the depth of the board, call Monte carlo and make a move until the threshold based
+        //on monte carlo
+        //if the board is at the threshold depth, implement monte carlo first
+        //call m
         // TODO: Implement this method have the computer make a move.
         // At first, we'll just invoke pickRandomMove (above) but later, you'll need to replace
         // it with an algorithm that uses the Monte Carlo method to pick a good move.
@@ -165,9 +196,6 @@ public class BlackHoleBoard {
 
             }
         }
-        // TODO: Implement this method to compute the final score for a given board.
-        // Find the empty tile left on the board then add/substract the values of all the
-        // surrounding tiles depending on who the tile belongs to.
         return score;
     }
 
@@ -211,5 +239,52 @@ public class BlackHoleBoard {
             return null;
         }
         return tiles[index];
+    }
+
+    private void minMax(){
+        //TODO: implement the min-max algorithm for height less than 4
+
+    }
+    //retrurns indecies of the paths the computer should take to reach threshold
+    private void monteCarlo(){
+        //TODO: implement monte carlo for height above 4
+        if(boardDepth < gameDepth - THRESHOLD){
+            HashMap<Integer,ArrayList<Integer>> mapAvgScoreToIndices = new HashMap<>();
+            for(int i = 0; i < NUM_GAMES_TO_SIMULATE; i++){
+                ArrayList<Integer> currentIndices = new ArrayList<>();
+                int score = 0;
+                while(!gameOver()){
+                    int index = pickRandomMove();
+                    setValue(index);
+                    currentIndices.add(index);
+                    score = getScore();
+
+                }
+                mapAvgScoreToIndices.put(score,currentIndices);
+            }
+            int maxScore = Collections.max(mapAvgScoreToIndices.keySet());
+            movesToMake.addAll(mapAvgScoreToIndices.get(maxScore));
+
+        }
+    }
+    //returns teh indicies of the paths from Min-max the computer should take after threshold depth
+    private void getMovesFromMinMax(){
+
+    }
+
+    private ArrayList<BlackHoleBoard> getAdjacentStates(){
+        ArrayList<BlackHoleBoard> board = new ArrayList<>();
+
+        //copy the board to this one
+        //pick a random move from teh copied board
+        //but set in the newly copied board inside the for loop
+        //add the board to the arraylist
+
+        //threshold is the number of empty spaces that exist
+        for(int i = 0;i< THRESHOLD;i++){
+            BlackHoleBoard copyBlackHole = copyBoardState(this);
+            pickRandomMove();
+
+        }
     }
 }
