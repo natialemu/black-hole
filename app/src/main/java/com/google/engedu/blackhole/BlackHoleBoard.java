@@ -273,18 +273,30 @@ public class BlackHoleBoard {
     }
 
     private ArrayList<BlackHoleBoard> getAdjacentStates(){
-        ArrayList<BlackHoleBoard> board = new ArrayList<>();
+        ArrayList<BlackHoleBoard> boards = new ArrayList<>();
 
-        //copy the board to this one
-        //pick a random move from teh copied board
-        //but set in the newly copied board inside the for loop
-        //add the board to the arraylist
+        BlackHoleBoard workingCopyBoard = new BlackHoleBoard();
+        copyBoardState(workingCopyBoard);
+
+
+        //copy the current board to the workingCopyBoard one
+        //pick a random move from the workingCopyBoard
+        //but make a move on the copyBlackHOleBoard ont the randomly selected board inside the for loop
+        //add the board currently being iterated to the arraylist
 
         //threshold is the number of empty spaces that exist
         for(int i = 0;i< THRESHOLD;i++){
-            BlackHoleBoard copyBlackHole = copyBoardState(this);
-            pickRandomMove();
+            BlackHoleBoard copyBlackHoleBoard = new BlackHoleBoard();
+            copyBoardState(copyBlackHoleBoard);
+            if(workingCopyBoard.gameOver()){
+                break;
+            }
+            int moveIndex = workingCopyBoard.pickRandomMove();
+            copyBlackHoleBoard.setValue(moveIndex);
+            boards.add(copyBlackHoleBoard);
 
         }
+
+        return boards;
     }
 }
