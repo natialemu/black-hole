@@ -16,6 +16,7 @@
 package com.google.engedu.blackhole;
 
 import android.content.Intent;
+import android.telephony.NeighboringCellInfo;
 import android.util.Log;
 
 import java.lang.reflect.Array;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Stack;
 
 /* Class that represent the state of the game.
  * Note that the buttons on screen are not updated by this class.
@@ -36,12 +38,20 @@ public class BlackHoleBoard {
         return boardDepth;
     }
 
+    public void setBoardDepth(int boardDepth) {
+        this.boardDepth = boardDepth;
+    }
+
     private int boardDepth;
 
     public static int THRESHOLD = 4;
 
     public int getBoardScore() {
         return boardScore;
+    }
+
+    public void setBoardScore(int boardScore) {
+        this.boardScore = boardScore;
     }
 
     private int boardScore;
@@ -56,6 +66,11 @@ public class BlackHoleBoard {
     private static final int NUM_GAMES_TO_SIMULATE = 2000;
     // The tiles for this board.
     private BlackHoleTile[] tiles;
+
+    public BlackHoleTile[] getTiles() {
+        return tiles;
+    }
+
     // The number of the current player. 0 for user, 1 for computer.
     private int currentPlayer;
     // The value to assign to the next move of each player.
@@ -153,8 +168,6 @@ public class BlackHoleBoard {
 
     // Pick a good move for the computer to make. Returns the array index of the position to play.
     public int pickMove() {
-
-
         //based on the depth of the board, call Monte carlo and make a move until the threshold based
         //on monte carlo
         //if the board is at the threshold depth, implement monte carlo first
@@ -162,7 +175,9 @@ public class BlackHoleBoard {
         // TODO: Implement this method have the computer make a move.
         // At first, we'll just invoke pickRandomMove (above) but later, you'll need to replace
         // it with an algorithm that uses the Monte Carlo method to pick a good move.
-        return pickRandomMove();
+        monteCarlo();
+        getMovesFromMinMax();
+        return movesToMake.remove(0);
     }
 
     // Makes the next move on the board at position i. Automatically updates the current player.
@@ -241,10 +256,79 @@ public class BlackHoleBoard {
         return tiles[index];
     }
 
-    private void minMax(){
+    //TODO create a second argument which is a stack to hold the indices
+    private void minMax(BlackHoleBoard startingBoard, Stack<Integer> remainingMoves){
         //TODO: implement the min-max algorithm for height less than 4
 
+        if(startingBoard.getBoardDepth() > (gameDepth - THRESHOLD)){
+            int gameScore = startingBoard.getScore();
+            if(gameScore != 0){
+                startingBoard.setBoardScore(gameScore);
+                return;
+            } else{
+
+                if(startingBoard.getCurrentPlayer() == 1){
+                    //TODO: for each adjacent board, call minmax recursively and assign the returned score then get the maximum of the returned score
+
+                    ArrayList<BlackHoleBoard> adjacentBoards = getAdjacentStates(startingBoard);
+                    int adjacentSize = adjacentBoards.size();
+                    for(int i= 0; i < adjacentSize; i++){
+                        minMax(adjacentBoards.get(i),remainingMoves);
+                    }
+                    startingBoard.setBoardScore(getMax(getAdjacentStates(startingBoard)));
+                }else{
+                    //TODO: for each adjacent board, call minmax recursively and assign the returned score then get minimum of those scores
+                    startingBoard.setBoardScore(getMin(getAdjacentStates(startingBoard)));
+                    ArrayList<BlackHoleBoard> adjacentBoards = getAdjacentStates(startingBoard);
+                    int adjacentSize = adjacentBoards.size();
+
+                    for(int i= 0; i < adjacentSize; i++){
+                        minMax(adjacentBoards.get(i),remainingMoves);
+                    }
+                    startingBoard.setBoardScore(getMin(getAdjacentStates(startingBoard)));
+                }
+                remainingMoves.push(getMin(getAdjacentStates(startingBoard)));
+
+            }
+
+        }
+
+        //base case: if the game is over:
+        //      then set the boardScore to the returned value of the gameOVer() method
+        //      return the score
+        // get the current board.
+        //if the current board is the computer:(getCurrentPlayer is 1)
+        //     set the boardScore of the current board to be the minimum of the score of all of the neighboring states
+        //if the currentBoard is the player: (getCurrentPlayer is 0)
+        //    set the boardScore to be the maximum of the score of the neighboring states
+
     }
+
+    private int getMin(ArrayList<BlackHoleBoard> adjacentStates) {
+        int minScore = adjacentStates.get(0).getBoardScore();
+        for(int i = 1; i < adjacentStates.size(); i++){
+            if(adjacentStates.get(i).getBoardScore() < minScore){
+                minScore = adjacentStates.get(0).getBoardScore();
+            }
+        }
+
+        return minScore;
+
+    }
+
+    private int getMax(ArrayList<BlackHoleBoard> adjacentStates) {
+        int maxScore = adjacentStates.get(0).getBoardScore();
+        for(int i = 1; i < adjacentStates.size(); i++){
+            if(adjacentStates.get(i).getBoardScore() > maxScore){
+                maxScore = adjacentStates.get(0).getBoardScore();
+            }
+        }
+
+        return maxScore;
+
+
+    }
+
     //retrurns indecies of the paths the computer should take to reach threshold
     private void monteCarlo(){
         //TODO: implement monte carlo for height above 4
@@ -269,14 +353,42 @@ public class BlackHoleBoard {
     }
     //returns teh indicies of the paths from Min-max the computer should take after threshold depth
     private void getMovesFromMinMax(){
+        if(getBoardDepth() > (gameDepth - THRESHOLD)){
+
+            //now each state has an associated score
+            //starting from the current board
+            //get the board with minimum score
+            //getFilledIndex(this board, the minScore neighboring board)
+            //add that index to the list moves to make
+            Stack<Integer> remainingMoves = new Stack<>();
+            BlackHoleBoard currentBoard = this;
+            minMax(currentBoard,remainingMoves);
+            final int stackStize = remainingMoves.size();
+            for(int i = 0; i < stackStize; i++) {
+                movesToMake.add(remainingMoves.pop());
+            }
+
+        }
 
     }
 
-    private ArrayList<BlackHoleBoard> getAdjacentStates(){
+    private int getFilledIndex(BlackHoleBoard currentBoard, BlackHoleBoard nextStateBoard)
+    {
+        assert(currentBoard.getTiles().length == nextStateBoard.getTiles().length);
+
+        for(int i = 0; i < nextStateBoard.getTiles().length; i++){
+            if(!currentBoard.getTiles()[i].equals(nextStateBoard.getTiles()[i])){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private ArrayList<BlackHoleBoard> getAdjacentStates(BlackHoleBoard board){
         ArrayList<BlackHoleBoard> boards = new ArrayList<>();
 
         BlackHoleBoard workingCopyBoard = new BlackHoleBoard();
-        copyBoardState(workingCopyBoard);
+        board.copyBoardState(workingCopyBoard);
 
 
         //copy the current board to the workingCopyBoard one
@@ -287,7 +399,7 @@ public class BlackHoleBoard {
         //threshold is the number of empty spaces that exist
         for(int i = 0;i< THRESHOLD;i++){
             BlackHoleBoard copyBlackHoleBoard = new BlackHoleBoard();
-            copyBoardState(copyBlackHoleBoard);
+            board.copyBoardState(copyBlackHoleBoard);
             if(workingCopyBoard.gameOver()){
                 break;
             }
