@@ -15,15 +15,9 @@
 
 package com.google.engedu.blackhole;
 
-import android.content.Intent;
-import android.telephony.NeighboringCellInfo;
-import android.util.Log;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.Stack;
 
