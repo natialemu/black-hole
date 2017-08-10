@@ -51,4 +51,44 @@ public class BlackHoleBoardTest {
     public void testGetScore() {
         // TODO: Implement this test to verify that your getScore method is working.
     }
+
+    @Test
+    public void testGetAdjacentStates() {
+        //TODO:
+    }
+
+    @Test
+    public void testMinMax(){
+        //TODO:
+
+    }
+
+    @Test
+    public void testGetNeighbors(){
+        //TODO
+
+    }
+
+    @Test
+    public void testGameIsOver() {
+        //TODO
+
+    }
+
+    @Test
+    public void testGameOver(){
+        //TODO
+
+    }
+
+    @Test
+    public void testPickMove() {
+        //TODO
+
+    }
+
+    @Test
+    public void testSetValue(){
+        //TODO
+    }
 }
