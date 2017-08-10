@@ -154,7 +154,9 @@ public class BlackHoleBoard {
         ArrayList<Integer> possibleMoves = new ArrayList<>();
         for (int i = 0; i < BOARD_SIZE; i++) {
             if (tiles[i] == null) {
+
                 possibleMoves.add(i);
+
             }
         }
         return possibleMoves.get(random.nextInt(possibleMoves.size()));
@@ -391,7 +393,7 @@ public class BlackHoleBoard {
         //add the board currently being iterated to the arraylist
 
         //threshold is the number of empty spaces that exist
-        for(int i = 0;i< THRESHOLD;i++){
+        for(int i = 0;i < THRESHOLD;i++){
             BlackHoleBoard copyBlackHoleBoard = new BlackHoleBoard();
             board.copyBoardState(copyBlackHoleBoard);
             if(workingCopyBoard.gameOver()){
