@@ -253,7 +253,7 @@ public class BlackHoleBoard {
     }
 
     //TODO create a second argument which is a stack to hold the indices
-    private void minMax(BlackHoleBoard startingBoard, Stack<Integer> remainingMoves){
+    public void minMax(BlackHoleBoard startingBoard, Stack<Integer> remainingMoves){
         //TODO: implement the min-max algorithm for height less than 4
 
         if(startingBoard.getBoardDepth() > (gameDepth - THRESHOLD)){
@@ -283,8 +283,12 @@ public class BlackHoleBoard {
                     }
                     startingBoard.setBoardScore(getMin(getAdjacentStates(startingBoard)));
                 }
-                remainingMoves.push(getMin(getAdjacentStates(startingBoard)));
+                //store moves the computer should make
+                if(startingBoard.getCurrentPlayer() == 1) {//only add the best moves when it is the computer's board
 
+                    remainingMoves.push(getMax(getAdjacentStates(startingBoard)));
+
+                }
             }
 
         }
@@ -335,9 +339,12 @@ public class BlackHoleBoard {
                 int score = 0;
                 while(!gameOver()){
                     int index = pickRandomMove();
+                    if(currentPlayer == 1) {//only consider moves the computer is making
+                        currentIndices.add(index);
+                        score = getScore();
+                    }
                     setValue(index);
-                    currentIndices.add(index);
-                    score = getScore();
+
 
                 }
                 mapAvgScoreToIndices.put(score,currentIndices);
@@ -380,7 +387,7 @@ public class BlackHoleBoard {
         return -1;
     }
 
-    private ArrayList<BlackHoleBoard> getAdjacentStates(BlackHoleBoard board){
+    public ArrayList<BlackHoleBoard> getAdjacentStates(BlackHoleBoard board){
         ArrayList<BlackHoleBoard> boards = new ArrayList<>();
 
         BlackHoleBoard workingCopyBoard = new BlackHoleBoard();
