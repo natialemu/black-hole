@@ -65,6 +65,46 @@ public class BlackHoleBoardTest {
     @Test
     public void testGetScore() {
 
+        BlackHoleBoard currentBoard = new BlackHoleBoard();
+        assertEquals(currentBoard.getScore(),0);
+        for(int i = 1; i< 6; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                currentBoard.setValue(currentBoard.coordsToIndex(j, i));
+            }
+        }
+
+        assertEquals(currentBoard.getScore(),0);
+
+        BlackHoleBoard newBoard = new BlackHoleBoard();
+
+        for(int i = 4; i< 6; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                newBoard.setValue(newBoard.coordsToIndex(j, i));
+            }
+        }
+
+        for(int i = 0; i< 3; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                newBoard.setValue(newBoard.coordsToIndex(j, i));
+            }
+        }
+
+        newBoard.setValue(newBoard.coordsToIndex(0, 3));
+        newBoard.setValue(newBoard.coordsToIndex(1, 3));
+        newBoard.setValue(newBoard.coordsToIndex(3, 3));
+        assert(newBoard.gameOver());
+        int nullIndex = newBoard.gameIsOver();
+        assertEquals(newBoard.coordsToIndex(2,3),nullIndex);
+
+
+        assertEquals(newBoard.getScore(),-41);
+        //hole is at 3,3
+
+
+
+
+
+
         // TODO: Implement this test to verify that your getScore method is working.
 
     }
@@ -139,6 +179,11 @@ public class BlackHoleBoardTest {
         }
 
 
+
+
+
+
+
     }
 
     @Test
@@ -167,7 +212,7 @@ public class BlackHoleBoardTest {
 
 
         assert(remainingMoves.contains(1));
-        //assert (remainingMoves.contains(2));
+        assertFalse (remainingMoves.contains(2));
 
         /*
         also the remaining number of moves should only be for the computer
@@ -199,7 +244,7 @@ public class BlackHoleBoardTest {
             }
         }
 
-        assertEquals(currentBoard.gameIsOver(),-1);
+        assertEquals(currentBoard.gameIsOver(),5);
         //TODO
 
     }

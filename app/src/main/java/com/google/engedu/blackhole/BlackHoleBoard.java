@@ -18,6 +18,7 @@ package com.google.engedu.blackhole;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
@@ -191,6 +192,28 @@ public class BlackHoleBoard {
         }
     }
 
+    public  int winner(int emptyIndex){
+        BlackHoleTile nullTile = safeGetTile(indexToCoords(emptyIndex).x,indexToCoords(emptyIndex).y);
+        List<BlackHoleTile> neighbors = getNeighbors(indexToCoords(emptyIndex));
+
+        int computerLostPoints = 0;
+        int playerLostPoints = 0;
+        for(BlackHoleTile tile: neighbors){
+            if(tile.player == 1){
+                computerLostPoints += tile.value;
+            }else{
+                playerLostPoints += tile.value;
+            }
+        }
+
+        if(computerLostPoints > playerLostPoints){
+            return 0;
+        }else if(playerLostPoints > computerLostPoints){
+            return 1;
+        }
+        return -1;
+
+    }
     /* If the game is over, computes the score for the current board by adding up the values of
      * all the tiles that surround the empty tile.
      * Otherwise, returns 0.
@@ -200,18 +223,18 @@ public class BlackHoleBoard {
         int emptyIndex = gameIsOver();
         if(emptyIndex != -1){
 
+
             ArrayList<BlackHoleTile> tiles = getNeighbors(indexToCoords(emptyIndex));
             for(BlackHoleTile tile: tiles){
                 //if the tile is the computer's, subtract score
                 //if the tile is the player's, add to the score
                 //goal is to optimize for the computer
-                if(tile.player == 1){//computer
+                if(winner(emptyIndex) == 1){//computer
                     score -= tile.value;
                 }
-                else{
+                else if(winner(emptyIndex) == 0){
                     score += tile.value;
                 }
-
             }
         }
         return score;
@@ -222,13 +245,13 @@ public class BlackHoleBoard {
         int nullIndex = -1;
 
         for(int i = 0; i < tiles.length; i++){
-            if(isOver && tiles[i] == null){
-                nullIndex = -1;
-            }
-
-            if(!isOver && tiles[i] == null){
-                isOver = true;
-                nullIndex = i;
+            if (tiles[i] == null) {
+                if (nullIndex == -1) {
+                    nullIndex = i;
+                } else {
+                    //return false;
+                    nullIndex = -1;
+                }
             }
 
         }
@@ -267,7 +290,7 @@ public class BlackHoleBoard {
 
         if(startingBoard.getBoardDepth() >= (gameDepth - THRESHOLD)){
             int gameScore = startingBoard.getScore();
-            if(gameScore != 0){
+            if(startingBoard.gameOver()){
                 startingBoard.setBoardScore(gameScore);
                 return;
             } else{
@@ -366,8 +389,8 @@ public class BlackHoleBoard {
                 }
                 mapAvgScoreToIndices.put(score,currentIndices);
             }
-            int maxScore = Collections.max(mapAvgScoreToIndices.keySet());
-            ArrayList<Integer> reccomendedMoves = mapAvgScoreToIndices.get(maxScore);
+            int minScore = Collections.min(mapAvgScoreToIndices.keySet());
+            ArrayList<Integer> reccomendedMoves = mapAvgScoreToIndices.get(minScore);
             for(int i = 0; i < THRESHOLD/2; i++){
                 reccomendedMoves.remove(reccomendedMoves.size()-1);
             }
