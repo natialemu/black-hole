@@ -83,7 +83,6 @@ public class BlackHoleBoard {
     public BlackHoleBoard() {
         tiles = new BlackHoleTile[BOARD_SIZE];
         boardScore = 0;
-        boardDepth = 0;
         reset();
     }
 
@@ -100,6 +99,7 @@ public class BlackHoleBoard {
     // Reset this board to its default state.
     public void reset() {
         currentPlayer = 0;
+        boardDepth = 0;
         nextMove[0] = 1;
         nextMove[1] = 1;
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -182,9 +182,10 @@ public class BlackHoleBoard {
 
     // Makes the next move on the board at position i. Automatically updates the current player.
     public void setValue(int i) {
-        if(tiles[i] == null) {
+        if(tiles[i] == null && !gameOver()) {
             tiles[i] = new BlackHoleTile(currentPlayer, nextMove[currentPlayer]);
             nextMove[currentPlayer]++;
+            boardDepth++;
             currentPlayer++;
             currentPlayer %= 2;
         }
@@ -340,25 +341,31 @@ public class BlackHoleBoard {
     //retrurns indecies of the paths the computer should take to reach threshold
     public void monteCarlo(){
         //TODO: implement monte carlo for height above 4
-        if(boardDepth < gameDepth - THRESHOLD){
+        if(boardDepth < (gameDepth - THRESHOLD)){
             HashMap<Integer,ArrayList<Integer>> mapAvgScoreToIndices = new HashMap<>();
             for(int i = 0; i < NUM_GAMES_TO_SIMULATE; i++){
                 ArrayList<Integer> currentIndices = new ArrayList<>();
+                BlackHoleBoard currentWorkingBoard = new BlackHoleBoard();
+                currentWorkingBoard.copyBoardState(this);
                 int score = 0;
-                while(!gameOver()){
-                    int index = pickRandomMove();
-                    if(currentPlayer == 1) {//only consider moves the computer is making
+                while(!currentWorkingBoard.gameOver()){
+                    int index = currentWorkingBoard.pickRandomMove();
+                    if(currentWorkingBoard.getCurrentPlayer() == 1) {//only consider moves the computer is making
                         currentIndices.add(index);
-                        score = getScore();
+                        score = currentWorkingBoard.getScore();
                     }
-                    setValue(index);
+                    currentWorkingBoard.setValue(index);
 
 
                 }
                 mapAvgScoreToIndices.put(score,currentIndices);
             }
             int maxScore = Collections.max(mapAvgScoreToIndices.keySet());
-            movesToMake.addAll(mapAvgScoreToIndices.get(maxScore));
+            ArrayList<Integer> reccomendedMoves = mapAvgScoreToIndices.get(maxScore);
+            for(int i = 0; i < THRESHOLD/2; i++){
+                reccomendedMoves.remove(reccomendedMoves.size()-1);
+            }
+            movesToMake.addAll(reccomendedMoves);
 
         }
     }
