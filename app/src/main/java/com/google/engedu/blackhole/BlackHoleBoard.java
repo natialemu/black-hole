@@ -72,6 +72,10 @@ public class BlackHoleBoard {
     // A single random object that we'll reuse for all our random number needs.
     private static final Random random = new Random();
 
+    public ArrayList<Integer> getMovesToMake() {
+        return movesToMake;
+    }
+
     //indices of moves that the computer should make
     private ArrayList<Integer> movesToMake = new ArrayList<>();
 
@@ -178,10 +182,12 @@ public class BlackHoleBoard {
 
     // Makes the next move on the board at position i. Automatically updates the current player.
     public void setValue(int i) {
-        tiles[i] = new BlackHoleTile(currentPlayer, nextMove[currentPlayer]);
-        nextMove[currentPlayer]++;
-        currentPlayer++;
-        currentPlayer %= 2;
+        if(tiles[i] == null) {
+            tiles[i] = new BlackHoleTile(currentPlayer, nextMove[currentPlayer]);
+            nextMove[currentPlayer]++;
+            currentPlayer++;
+            currentPlayer %= 2;
+        }
     }
 
     /* If the game is over, computes the score for the current board by adding up the values of
@@ -210,18 +216,20 @@ public class BlackHoleBoard {
         return score;
     }
 
-    private int gameIsOver() {
+    public int gameIsOver() {
         boolean isOver = false;
         int nullIndex = -1;
 
         for(int i = 0; i < tiles.length; i++){
+            if(isOver && tiles[i] == null){
+                nullIndex = -1;
+            }
+
             if(!isOver && tiles[i] == null){
                 isOver = true;
                 nullIndex = i;
             }
-            if(isOver && tiles[i] == null){
-                nullIndex = -1;
-            }
+
         }
         return nullIndex;
 
@@ -330,7 +338,7 @@ public class BlackHoleBoard {
     }
 
     //retrurns indecies of the paths the computer should take to reach threshold
-    private void monteCarlo(){
+    public void monteCarlo(){
         //TODO: implement monte carlo for height above 4
         if(boardDepth < gameDepth - THRESHOLD){
             HashMap<Integer,ArrayList<Integer>> mapAvgScoreToIndices = new HashMap<>();
@@ -391,7 +399,8 @@ public class BlackHoleBoard {
         ArrayList<BlackHoleBoard> boards = new ArrayList<>();
 
         BlackHoleBoard workingCopyBoard = new BlackHoleBoard();
-        board.copyBoardState(workingCopyBoard);
+
+        workingCopyBoard.copyBoardState(board);//copy board into workingCopyBoard
 
 
         //copy the current board to the workingCopyBoard one
@@ -400,7 +409,8 @@ public class BlackHoleBoard {
         //add the board currently being iterated to the arraylist
 
         //threshold is the number of empty spaces that exist
-        for(int i = 0;i < THRESHOLD;i++){
+        int numEmptySpaces = workingCopyBoard.getEmptySpaces();
+        for(int i = 0;i < numEmptySpaces;i++){
             BlackHoleBoard copyBlackHoleBoard = new BlackHoleBoard();
             board.copyBoardState(copyBlackHoleBoard);
             if(workingCopyBoard.gameOver()){
@@ -413,5 +423,15 @@ public class BlackHoleBoard {
         }
 
         return boards;
+    }
+
+    public int getEmptySpaces() {
+        int count = 0;
+        for(BlackHoleTile blackHoleTile: getTiles()){
+            if(blackHoleTile == null){
+                count++;
+            }
+        }
+        return count;
     }
 }

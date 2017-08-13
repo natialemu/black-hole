@@ -77,10 +77,15 @@ public class BlackHoleBoardTest {
 
         for(int i = 3; i< 6; i++) {
             for (int j = 0; j < i + 1; j++) {
-                b.setValue(b.coordsToIndex(i, j));
+                b.setValue(b.coordsToIndex(j, i));
             }
         }
 
+
+
+
+
+        assertEquals(b.getEmptySpaces(),6);
 
         List<BlackHoleBoard> actualAdjacentStates = b.getAdjacentStates(b);
 
@@ -91,7 +96,7 @@ public class BlackHoleBoardTest {
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < i+1;j++){
                 BlackHoleBoard expectedAdjacentState = new BlackHoleBoard();
-                b.copyBoardState(expectedAdjacentState);
+                expectedAdjacentState.copyBoardState(b);
                 expectedAdjacentState.setValue(expectedAdjacentState.coordsToIndex(i,j));
                 expectedAdjacentStates.add(expectedAdjacentState);
             }
@@ -109,7 +114,7 @@ public class BlackHoleBoardTest {
         BlackHoleBoard currentBoard = new BlackHoleBoard();
         for(int i = 2; i< 6; i++) {
             for (int j = 0; j < i + 1; j++) {
-                currentBoard.setValue(currentBoard.coordsToIndex(i, j));
+                currentBoard.setValue(currentBoard.coordsToIndex(j, i));
             }
         }
 
@@ -123,8 +128,8 @@ public class BlackHoleBoardTest {
         for(int i = 0; i < 2; i++){
             for(int j = 0; j < i+1;j++){
                 BlackHoleBoard expectedAdjacentState = new BlackHoleBoard();
-                currentBoard.copyBoardState(expectedAdjacentState);
-                expectedAdjacentState.setValue(expectedAdjacentState.coordsToIndex(i,j));
+                expectedAdjacentState.copyBoardState(currentBoard);
+                expectedAdjacentState.setValue(expectedAdjacentState.coordsToIndex(j,i));
                 expectedAdjacentStates1.add(expectedAdjacentState);
             }
         }
@@ -161,18 +166,34 @@ public class BlackHoleBoardTest {
         /*
         also the remaining number of moves should only be for the computer
          */
-        //TODO:
-
-    }
-
-    @Test
-    public void testGetNeighbors(){
-        //TODO
 
     }
 
     @Test
     public void testGameIsOver() {
+
+
+        for(int i = 1; i< 6; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                b.setValue(b.coordsToIndex(j, i));
+            }
+        }
+
+        assertEquals (b.gameIsOver(),0);
+        BlackHoleBoard currentBoard = new BlackHoleBoard();
+        for(int i = 3; i< 6; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                currentBoard.setValue(currentBoard.coordsToIndex(j, i));
+            }
+        }
+        assertEquals(currentBoard.gameIsOver(),-1);
+        for(int i = 0; i< 3; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                currentBoard.setValue(currentBoard.coordsToIndex(j, i));
+            }
+        }
+
+        assertEquals(currentBoard.gameIsOver(),-1);
         //TODO
 
     }
@@ -180,6 +201,27 @@ public class BlackHoleBoardTest {
     @Test
     public void testGameOver(){
         //TODO
+        for(int i = 1; i< 6; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                b.setValue(b.coordsToIndex(i, j));
+            }
+        }
+
+        assert (b.gameOver());
+        BlackHoleBoard currentBoard = new BlackHoleBoard();
+        for(int i = 3; i< 6; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                currentBoard.setValue(currentBoard.coordsToIndex(i, j));
+            }
+        }
+        assertFalse(currentBoard.gameOver());
+        for(int i = 0; i< 3; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                currentBoard.setValue(currentBoard.coordsToIndex(i, j));
+            }
+        }
+
+        assertFalse(currentBoard.gameOver());
 
     }
 
@@ -191,46 +233,43 @@ public class BlackHoleBoardTest {
 
     @Test
     public void testSetValue(){
+        //start off with empty board
+        //
+        assertEquals(b.getCurrentPlayer(),0);
+
+        b.setValue(0);
+        assertEquals(b.getCurrentPlayer(),1);
+        BlackHoleTile[] tiles = b.getTiles();
+        assertEquals(tiles[0].player,0);
+        assertEquals(tiles[0].value,1);
+        //make sure tile at 0 has the right value
+        //make sure tile 0 belogs to the right player
+
+        b.setValue(5);
+        assertEquals(b.getTiles()[5].player,1);
+        assertEquals(b.getTiles()[5].value,1);
+        assertEquals(b.getCurrentPlayer(),0);
+
+
         //TODO
     }
 
-    @Test
-    public void getAdjacentStates() {
-
-    }
-
-    @Test
-    public void testGetFilledIndex() {
-
-    }
-
-    @Test
-    public void testMinMax(){
-
-    }
 
     @Test
     public void testMonteCarlo(){
+
+        //only test that the right number of moves are added after monte carlo
+
+        b.monteCarlo();
+        //should return 8 moves for the computer to make out of a possible 17
+        assertEquals(b.getMovesToMake().size(),8);
 
     }
 
     @Test
     public void testGetMovesFromMinMax() {
 
-    }
-
-    @Test
-    public void testGameIsOver(){
 
     }
 
-    @Test
-    public void testSetValue(){
-
-    }
-
-    @Test
-    public void testPickMove(){
-
-    }
 }
