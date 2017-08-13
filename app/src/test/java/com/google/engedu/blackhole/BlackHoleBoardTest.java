@@ -145,15 +145,21 @@ public class BlackHoleBoardTest {
     public void testMinMax(){
 
         //only four moves are left
-        for(int i = 2; i< 6; i++) {
+        for(int i = 3; i< 6; i++) {
             for (int j = 0; j < i + 1; j++) {
-                b.setValue(b.coordsToIndex(i, j));
+                b.setValue(b.coordsToIndex(j, i));
             }
         }
+
+        assert(!b.gameOver());
+        assertEquals(b.getEmptySpaces(),6);
         b.setValue(b.coordsToIndex(2,1));
         b.setValue(b.coordsToIndex(2,2));
+        assertEquals(b.getEmptySpaces(),4);
 
         Stack<Integer> remainingMoves = new Stack<>();
+
+        assert(b.getBoardDepth() > (21 - BlackHoleBoard.THRESHOLD));
 
         b.minMax(b,remainingMoves);
 
@@ -268,6 +274,39 @@ public class BlackHoleBoardTest {
 
     @Test
     public void testGetMovesFromMinMax() {
+
+
+    }
+
+    @Test
+    public void testGetFilledIndex() {
+
+        BlackHoleBoard currentBoard = new BlackHoleBoard();
+
+        BlackHoleBoard nextStateBoard = new BlackHoleBoard();
+
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),-1);
+
+        nextStateBoard.setValue(4);
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),4);
+
+        nextStateBoard.setValue(6);
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),-1);
+
+        currentBoard.setValue(4);
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),6);
+
+        currentBoard.setValue(6);
+        currentBoard.setValue(5);
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),-1);
+
+        currentBoard.setValue(8);
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),-1);
+
+        nextStateBoard.setValue(5);
+        nextStateBoard.setValue(8);
+        nextStateBoard.setValue(10);
+        assertEquals(currentBoard.getFilledIndex(nextStateBoard),10);
 
 
     }

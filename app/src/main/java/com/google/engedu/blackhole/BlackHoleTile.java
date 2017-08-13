@@ -24,4 +24,23 @@ public class BlackHoleTile {
         this.player = player;
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BlackHoleTile)) return false;
+
+        BlackHoleTile that = (BlackHoleTile) o;
+
+        if (player != that.player) return false;
+        return value == that.value;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = player;
+        result = 31 * result + value;
+        return result;
+    }
 }

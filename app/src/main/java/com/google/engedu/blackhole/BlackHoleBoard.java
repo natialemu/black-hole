@@ -205,7 +205,7 @@ public class BlackHoleBoard {
                 //if the tile is the computer's, subtract score
                 //if the tile is the player's, add to the score
                 //goal is to optimize for the computer
-                if(tile.player == 1){
+                if(tile.player == 1){//computer
                     score -= tile.value;
                 }
                 else{
@@ -265,7 +265,7 @@ public class BlackHoleBoard {
     public void minMax(BlackHoleBoard startingBoard, Stack<Integer> remainingMoves){
         //TODO: implement the min-max algorithm for height less than 4
 
-        if(startingBoard.getBoardDepth() > (gameDepth - THRESHOLD)){
+        if(startingBoard.getBoardDepth() >= (gameDepth - THRESHOLD)){
             int gameScore = startingBoard.getScore();
             if(gameScore != 0){
                 startingBoard.setBoardScore(gameScore);
@@ -280,24 +280,30 @@ public class BlackHoleBoard {
                     for(int i= 0; i < adjacentSize; i++){
                         minMax(adjacentBoards.get(i),remainingMoves);
                     }
-                    startingBoard.setBoardScore(getMax(getAdjacentStates(startingBoard)));
+                    startingBoard.setBoardScore(getMin(adjacentBoards));
+                    BlackHoleBoard minNextMove = adjacentBoards.get(0);
+                    for(BlackHoleBoard blackHoleBoard: adjacentBoards){
+                        if(blackHoleBoard.getBoardScore() < minNextMove.boardScore){
+                            minNextMove = blackHoleBoard;
+                        }
+                    }
+                    int index = startingBoard.getFilledIndex(minNextMove);
+                    remainingMoves.push(index);
+                    //if i am the computer here, i wanna make the move with the board that has
+                    //the smallest score of the adjacent states
                 }else{
                     //TODO: for each adjacent board, call minmax recursively and assign the returned score then get minimum of those scores
-                    startingBoard.setBoardScore(getMin(getAdjacentStates(startingBoard)));
+                    //startingBoard.setBoardScore(getMin(getAdjacentStates(startingBoard)));
                     ArrayList<BlackHoleBoard> adjacentBoards = getAdjacentStates(startingBoard);
                     int adjacentSize = adjacentBoards.size();
 
                     for(int i= 0; i < adjacentSize; i++){
                         minMax(adjacentBoards.get(i),remainingMoves);
                     }
-                    startingBoard.setBoardScore(getMin(getAdjacentStates(startingBoard)));
+                    startingBoard.setBoardScore(getMax(adjacentBoards));
                 }
                 //store moves the computer should make
-                if(startingBoard.getCurrentPlayer() == 1) {//only add the best moves when it is the computer's board
 
-                    remainingMoves.push(getMax(getAdjacentStates(startingBoard)));
-
-                }
             }
 
         }
@@ -390,16 +396,33 @@ public class BlackHoleBoard {
 
     }
 
-    private int getFilledIndex(BlackHoleBoard currentBoard, BlackHoleBoard nextStateBoard)
+    public int getFilledIndex(BlackHoleBoard nextStateBoard)
     {
-        assert(currentBoard.getTiles().length == nextStateBoard.getTiles().length);
-
-        for(int i = 0; i < nextStateBoard.getTiles().length; i++){
-            if(!currentBoard.getTiles()[i].equals(nextStateBoard.getTiles()[i])){
-                return i;
-            }
+        boolean isNextState = false;
+        int index = -1;
+        if(getEmptySpaces() - nextStateBoard.getEmptySpaces() != 1){
+            return index;
         }
-        return -1;
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                if(isNextState && !nullSafeGetTile(i).equals(nextStateBoard.nullSafeGetTile(i))){
+                    index = -1;
+                }
+
+                if (!isNextState && !nullSafeGetTile(i).equals(nextStateBoard.nullSafeGetTile(i))) {
+                    isNextState = true;
+                    index = i;
+
+                }
+            }
+
+        return index;
+    }
+
+    public BlackHoleTile nullSafeGetTile(int i ){
+        if(getTiles()[i] == null){
+            return new BlackHoleTile(1,-1);
+        }
+        return getTiles()[i];
     }
 
     public ArrayList<BlackHoleBoard> getAdjacentStates(BlackHoleBoard board){
