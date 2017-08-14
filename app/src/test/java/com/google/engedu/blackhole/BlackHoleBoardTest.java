@@ -108,117 +108,8 @@ public class BlackHoleBoardTest {
         // TODO: Implement this test to verify that your getScore method is working.
 
     }
-    @Test
-    public void testGetAdjacentStates() {
-
-        //------------------------------------------------------------------------------------------
-        //                   When first three rows are not filled
-        //------------------------------------------------------------------------------------------
-
-        for(int i = 3; i< 6; i++) {
-            for (int j = 0; j < i + 1; j++) {
-                b.setValue(b.coordsToIndex(j, i));
-            }
-        }
 
 
-
-
-
-        assertEquals(b.getEmptySpaces(),6);
-
-        List<BlackHoleBoard> actualAdjacentStates = b.getAdjacentStates(b);
-
-        assertEquals(actualAdjacentStates.size(),6);
-
-        List<BlackHoleBoard> expectedAdjacentStates = new ArrayList<>();
-
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < i+1;j++){
-                BlackHoleBoard expectedAdjacentState = new BlackHoleBoard();
-                expectedAdjacentState.copyBoardState(b);
-                expectedAdjacentState.setValue(expectedAdjacentState.coordsToIndex(i,j));
-                expectedAdjacentStates.add(expectedAdjacentState);
-            }
-        }
-
-        for(BlackHoleBoard expectedAdjacentState : expectedAdjacentStates){
-            assert(actualAdjacentStates.contains(expectedAdjacentState));
-        }
-
-
-        //----------------------------------------------------------------------------------------
-        //                          When first two rows are not filled
-        //----------------------------------------------------------------------------------------
-
-        BlackHoleBoard currentBoard = new BlackHoleBoard();
-        for(int i = 2; i< 6; i++) {
-            for (int j = 0; j < i + 1; j++) {
-                currentBoard.setValue(currentBoard.coordsToIndex(j, i));
-            }
-        }
-
-
-        List<BlackHoleBoard> actualAdjacentStates1 = currentBoard.getAdjacentStates(currentBoard);
-
-        assertEquals(actualAdjacentStates1.size(),3);
-
-        List<BlackHoleBoard> expectedAdjacentStates1 = new ArrayList<>();
-
-        for(int i = 0; i < 2; i++){
-            for(int j = 0; j < i+1;j++){
-                BlackHoleBoard expectedAdjacentState = new BlackHoleBoard();
-                expectedAdjacentState.copyBoardState(currentBoard);
-                expectedAdjacentState.setValue(expectedAdjacentState.coordsToIndex(j,i));
-                expectedAdjacentStates1.add(expectedAdjacentState);
-            }
-        }
-
-        for(BlackHoleBoard expectedAdjacentState : expectedAdjacentStates1){
-            assert(actualAdjacentStates1.contains(expectedAdjacentState));
-        }
-
-
-
-
-
-
-
-    }
-
-    @Test
-    public void testMinMax(){
-
-        //only four moves are left
-        for(int i = 3; i< 6; i++) {
-            for (int j = 0; j < i + 1; j++) {
-                b.setValue(b.coordsToIndex(j, i));
-            }
-        }
-
-        assert(!b.gameOver());
-        assertEquals(b.getEmptySpaces(),6);
-        b.setValue(b.coordsToIndex(2,1));
-        b.setValue(b.coordsToIndex(2,2));
-        assertEquals(b.getEmptySpaces(),4);
-
-        Stack<Integer> remainingMoves = new Stack<>();
-
-        assert(b.getBoardDepth() > (21 - BlackHoleBoard.THRESHOLD));
-
-        b.minMax(b,remainingMoves);
-
-        assertEquals(remainingMoves.size(),1);
-
-
-        assert(remainingMoves.contains(1));
-        assertFalse (remainingMoves.contains(2));
-
-        /*
-        also the remaining number of moves should only be for the computer
-         */
-
-    }
 
     @Test
     public void testGameIsOver() {
@@ -305,17 +196,7 @@ public class BlackHoleBoardTest {
         //TODO
     }
 
-
-    @Test
-    public void testMonteCarlo(){
-
-        //only test that the right number of moves are added after monte carlo
-
-        b.monteCarlo();
-        //should return 8 moves for the computer to make out of a possible 17
-        assertEquals(b.getMovesToMake().size(),8);
-
-    }
+    
 
     @Test
     public void testGetMovesFromMinMax() {

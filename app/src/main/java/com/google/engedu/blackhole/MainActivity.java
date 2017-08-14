@@ -96,11 +96,15 @@ public class MainActivity extends AppCompatActivity {
     private void computerTurn() {
         int position = board.pickMove();
         int id = getResources().getIdentifier("button" + position, "id", getPackageName());
+        Toast.makeText(this," trying to find button"+position,Toast.LENGTH_SHORT).show();
         Button b = (Button) findViewById(id);
         if (b == null) {
             Log.i("Blackhole", "Couldn't find button " + position + " with id " + id);
+            Toast.makeText(this,"Couldn't find button " + position + " with id " + id,Toast.LENGTH_SHORT).show();
+        }else{
+            markButtonAsClicked(b);
         }
-        markButtonAsClicked(b);
+
     }
 
     // Handler for the reset button. Resets both the board and the game buttons.
