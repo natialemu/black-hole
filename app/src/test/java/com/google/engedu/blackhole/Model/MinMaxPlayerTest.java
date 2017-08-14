@@ -1,6 +1,8 @@
-package com.google.engedu.blackhole;
+package com.google.engedu.blackhole.Model;
 
-import org.junit.Before;
+import com.google.engedu.blackhole.Model.BlackHoleBoard;
+import com.google.engedu.blackhole.Model.MinMaxPlayer;
+
 import org.junit.Test;
 
 import java.util.ArrayList;

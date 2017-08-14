@@ -13,16 +13,14 @@
  * limitations under the License.
  */
 
-package com.google.engedu.blackhole;
+package com.google.engedu.blackhole.Model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Stack;
 
 /* Class that represent the state of the game.
  * Note that the buttons on screen are not updated by this class.
@@ -271,10 +269,10 @@ public class BlackHoleBoard {
                 //if the tile is the computer's, subtract score
                 //if the tile is the player's, add to the score
                 //goal is to optimize for the computer
-                if(winner(emptyIndex) == 1){//computer
+                if(winner(emptyIndex) == 1 && tile.player == 1){//computer
                     score -= tile.value;
                 }
-                else if(winner(emptyIndex) == 0){
+                else if(winner(emptyIndex) == 0 && tile.player == 0){
                     score += tile.value;
                 }
             }

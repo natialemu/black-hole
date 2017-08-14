@@ -13,16 +13,14 @@
  * limitations under the License.
  */
 
-package com.google.engedu.blackhole;
+package com.google.engedu.blackhole.Model;
 
-import android.util.Pair;
+import com.google.engedu.blackhole.Model.BlackHoleBoard;
+import com.google.engedu.blackhole.Model.BlackHoleTile;
+import com.google.engedu.blackhole.Model.Coordinates;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
 
 import static org.junit.Assert.*;
 

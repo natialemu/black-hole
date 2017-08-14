@@ -1,8 +1,10 @@
-package com.google.engedu.blackhole;
+package com.google.engedu.blackhole.Model;
+
+import com.google.engedu.blackhole.Model.BlackHoleBoard;
 
 import java.util.HashMap;
 
-import static com.google.engedu.blackhole.BlackHoleBoard.THRESHOLD;
+import static com.google.engedu.blackhole.Model.BlackHoleBoard.THRESHOLD;
 
 /**
  * Created by Nathnael on 8/13/2017.
