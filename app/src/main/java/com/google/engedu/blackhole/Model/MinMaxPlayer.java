@@ -1,4 +1,6 @@
-package com.google.engedu.blackhole;
+package com.google.engedu.blackhole.Model;
+
+import com.google.engedu.blackhole.Model.BlackHoleBoard;
 
 import java.util.ArrayList;
 import java.util.HashMap;

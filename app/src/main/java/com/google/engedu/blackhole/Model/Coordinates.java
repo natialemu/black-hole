@@ -13,34 +13,20 @@
  * limitations under the License.
  */
 
-package com.google.engedu.blackhole;
+package com.google.engedu.blackhole.Model;
 
+public class Coordinates {
+    public int x, y;
 
-public class BlackHoleTile {
-    public int player;
-    public int value;
-
-    BlackHoleTile(int player, int value) {
-        this.player = player;
-        this.value = value;
+    public Coordinates(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BlackHoleTile)) return false;
-
-        BlackHoleTile that = (BlackHoleTile) o;
-
-        if (player != that.player) return false;
-        return value == that.value;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = player;
-        result = 31 * result + value;
-        return result;
+        Coordinates other = (Coordinates) o;
+        return x == other.x && y == other.y;
     }
 }
+
